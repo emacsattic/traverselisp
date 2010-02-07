@@ -251,7 +251,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.54")
+(defconst traverse-version "1.1.55")
 
 ;;; Code:
 
@@ -392,10 +392,12 @@ Are allowed:(examples)
   (other-window 1)
   (delete-other-windows))
 
-(defsubst traverse-list-directory (dirname &optional abs)
+(defun traverse-list-directory (dirname &optional abs)
   "Use directory-files without these \".\" \"..\".
-If abs is non-nil use absolute path."
-  (directory-files dirname abs "[^\\.]"))
+If abs is non-nil use absolute path.
+Use the same regexp as `directory-files-no-dot-files-regexp'."
+  (let ((regexp "^\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*"))
+    (directory-files dirname abs regexp)))
 
 (defsubst* traverse-walk-directory (dirname &key file-fn dir-fn exclude-files exclude-dirs)
   "Walk through DIRNAME and use FILE-FN and/or DIR-FN function on each file/dir found.
@@ -419,20 +421,19 @@ Example of use:
 See `traverse-ignore-files' and `traverse-ignore-dirs'."
   (labels
       ((walk (name)
-         (cond ((and (file-directory-p name) ;; DIR PROCESSING
-                     (not (file-symlink-p name))) ;; don't follow symlinks
-                (when dir-fn
-                  (funcall dir-fn name))
+         (cond ((eq t (car (file-attributes name))) ; DIR PROCESSING don't follow symlinks.
+                ;; Faster than: (and (file-directory-p name)(not (file-symlink-p name))) 
+                (when dir-fn (funcall dir-fn name))
                 (if exclude-dirs
                     (dolist (x (traverse-list-directory name t))
-                      (when (stringp x) ;; be sure x is a string and not nil
+                      (when (stringp x) ; be sure x is a string and not nil
                         (unless (member (file-name-nondirectory x) exclude-dirs)
-                          (walk x)))) ;; Return to TOP and take the good cond
+                          (walk x)))) ; Return to TOP and take the good cond
+                    ;; Same but don't check excludes-dirs.
                     (dolist (x (traverse-list-directory name t))
                       (when (stringp x)
-                        (walk x))))) ;; Return to TOP and take the good cond
-               ((and (file-regular-p name) ;; FILE PROCESSING
-                     (not (file-symlink-p name))) ;; don't follow symlinks
+                        (walk x))))) ; Return to TOP and take the good cond
+               ((and (file-regular-p name) (not (file-symlink-p name))) ; 
                 (when file-fn
                   (if exclude-files
                       (unless (traverse-check-only-lists name exclude-files)
