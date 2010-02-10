@@ -244,7 +244,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.56")
+(defconst traverse-version "1.1.57")
 
 ;;; Code:
 
@@ -1334,6 +1334,7 @@ for commands provided in the search buffer."
                 (progn (traverse-incremental-jump-and-quit)
                        (kill-buffer "*traverse search*") (message nil))
                 (traverse-incremental-jump) (other-window 1)))
+        (setq traverse-count-occurences 0)
         (setq traverse-incremental-quit-flag nil)))))
 
 (defun traverse-incremental-cancel-search ()
