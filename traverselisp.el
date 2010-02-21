@@ -244,7 +244,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.57")
+(defconst traverse-version "1.1.58")
 
 ;;; Code:
 
@@ -1132,8 +1132,6 @@ Special commands:
 (defvar traverse-incremental-quit-flag nil)
 (defvar traverse-incremental-current-buffer nil)
 (defvar traverse-incremental-occur-overlay nil)
-(defvar traverse-incremental-read-fn
-  (if (fboundp 'read-key) 'read-key 'traverse-read-char-or-event))
 (defvar traverse-incremental-exit-and-quit-p nil)
 
 (defun traverse-goto-line (numline)
@@ -1202,10 +1200,12 @@ Special commands:
   (traverse-incremental-scroll -1))
 
 (defun traverse-read-char-or-event (prompt)
-  "Use `read-char' to read keyboard input, if input is not a char use `read-event' instead."
-  (let* ((chr (condition-case nil (read-char prompt) (error nil)))
-         (evt (unless chr (read-event))))
-    (or chr evt)))
+  "Read keyboard input with `read-char' and `read-event' if `read-key' not available."
+  (if (fboundp 'read-key)
+      (read-key prompt)
+      (let* ((chr (condition-case nil (read-char prompt) (error nil)))
+             (evt (unless chr (read-event))))
+        (or chr evt))))
 
 (defun traverse-incremental-read-search-input (initial-input)
   "Read each keyboard input and add it to `traverse-incremental-search-pattern'."
@@ -1216,8 +1216,8 @@ Special commands:
     (unless (string= initial-input "")
       (loop for char across initial-input do (push char tmp-list)))
     (setq traverse-incremental-search-pattern initial-input)
-    (while (let ((char (funcall traverse-incremental-read-fn
-                                (concat prompt traverse-incremental-search-pattern doc))))
+    (while (let ((char (traverse-read-char-or-event
+                        (concat prompt traverse-incremental-search-pattern doc))))
              (case char
                ((down ?\C-n) ; Next line
                 (when traverse-incremental-search-timer
