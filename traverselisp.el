@@ -244,7 +244,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.59")
+(defconst traverse-version "1.1.60")
 
 ;;; Code:
 
@@ -1249,39 +1249,39 @@ Special commands:
       (while (let ((char (traverse-read-char-or-event
                           (concat prompt traverse-incremental-search-pattern doc))))
                (case char
-                 ((down ?\C-n) ; Next line
+                 ((down ?\C-n)                 ; Next line
                   (when traverse-incremental-search-timer
                     (traverse-incremental-cancel-search))
                   (traverse-incremental-next-line)
                   (traverse-incremental-occur-color-current-line) t)
-                 ((up ?\C-p) ; Precedent line
+                 ((up ?\C-p)                   ; Precedent line
                   (when traverse-incremental-search-timer
                     (traverse-incremental-cancel-search))
                   (traverse-incremental-precedent-line)
                   (traverse-incremental-occur-color-current-line) t)
                  ((?\e ?\r) (message nil) nil) ; RET or ESC break and exit code.
-                 (?\d ; Delete last char of `traverse-incremental-search-pattern' with DEL.
+                 (?\d                          ; Delete backward with DEL.
                   (unless traverse-incremental-search-timer
                     (traverse-incremental-start-timer))
                   (pop tmp-list))         
-                 (?\C-g ; Quit and restore buffers.
+                 (?\C-g                        ; Quit and restore buffers.
                   (setq traverse-incremental-quit-flag t) nil)
-                 ((or right ?\C-z) ; persistent action
+                 ((or right ?\C-z)             ; persistent action
                   (traverse-incremental-jump) (other-window 1) t)
-                 ((left ?\C-j) ; Jump to candidate and kill search buffer.
+                 ((left ?\C-j)                 ; Jump to candidate and kill search buffer.
                   (setq traverse-incremental-exit-and-quit-p t) nil)
-                 (?\C-v ; Scroll down
+                 (?\C-v                        ; Scroll down
                   (scroll-other-window 1) t)
-                 (?\C-k ; Kill input
+                 (?\C-k                        ; Kill input
                   (kill-new traverse-incremental-search-pattern) 
                   (setq tmp-list ()) t)
-                 (?\M-v ; Scroll up
+                 (?\M-v                        ; Scroll up
                   (scroll-other-window -1) t)
-                 (?\M-p ; Precedent history elm.
+                 (?\M-p                        ; Precedent history elm.
                   (cycle-hist -1))
-                 (?\M-n ; Next history elm.
+                 (?\M-n                        ; Next history elm.
                   (cycle-hist 1))
-                 (t ; Store character
+                 (t                            ; Store character
                   (unless traverse-incremental-search-timer
                     (traverse-incremental-start-timer))
                   (if (characterp char)
