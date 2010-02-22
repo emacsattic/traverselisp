@@ -250,7 +250,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.61")
+(defconst traverse-version "1.1.62")
 
 ;;; Code:
 
@@ -1226,8 +1226,7 @@ Set it to nil to remove doc in prompt."
   (let* ((prompt       (propertize traverse-incremental-search-prompt 'face 'minibuffer-prompt))
          (inhibit-quit (not (fboundp 'read-key)))
          (tmp-list     ())
-         (hist         (append "" traverse-incremental-history))
-         (it           (iter-list hist))
+         (it           (iter-list traverse-incremental-history))
          (cur-hist-elm (car traverse-incremental-history))
          (start-hist   nil)) ; Flag to notify if cycling history started.
     (unless (string= initial-input "")
@@ -1241,15 +1240,19 @@ Set it to nil to remove doc in prompt."
                    ;; starting at the current element of history.
                    (when start-hist
                      (if (< arg 0) ; M-p (move from left to right in ring).
-                         (setq it (sub-iter-next hist cur-hist-elm :test 'equal))
-                         (setq it (sub-iter-prec hist cur-hist-elm :test 'equal))))
+                         (setq it (sub-iter-next traverse-incremental-history
+                                                 cur-hist-elm :test 'equal))
+                         (setq it (sub-iter-prec traverse-incremental-history
+                                                 cur-hist-elm :test 'equal))))
                    (setq tmp-list nil)
                    (let ((next (iter-next it)))
                      ;; If no more elements in list
                      ;; rebuild a new iterator based on the whole history list
                      ;; and restart from beginning or end of list.
                      (unless next
-                       (setq it (iter-list (if (< arg 0) hist (reverse hist))))
+                       (setq it (iter-list (if (< arg 0)
+                                               traverse-incremental-history
+                                               (reverse traverse-incremental-history))))
                        (setq next (iter-next it)) (setq start-hist nil))
                      (setq initial-input (or next "")))
                    (unless (string= initial-input "")
