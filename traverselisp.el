@@ -27,11 +27,15 @@
 ;;; Commentary:
 ;;  ==========
 
-;; Developped and tested on:
-;; GNU Emacs 23.1.50.1 (i686-pc-linux-gnu, GTK+ Version 2.18.3) of 2009-11-07 on tux
+;; Developped and tested on Emacs23+ (CVS)
 
 ;; Compatibility: Emacs23.*
 ;; =============
+
+;; Dependencies:
+;; ============
+;;
+;; iterator.el (part of traverselisp package).
 
 ;; Install:
 ;; =======
@@ -40,14 +44,16 @@
 ;; (If you don't do that you will have error as traverse
 ;; use code that work only at compile time.)
 ;;
+;; You will need also iterator.el to be in your load path and compiled.
+;;
 ;; Add to your .emacs:
 ;;
 ;; (require 'traverselisp)
 ;;
 ;; Set up your prefered keys for dired and globals as usual.
-;;
-;; Here is my config with version-1.1.31:
-;; =====================================
+
+;; Suggested config:
+;; ================
 ;;
 ;; (require 'traverselisp)
 ;; (setq traverse-use-avfs t)
@@ -62,7 +68,7 @@
 ;; (add-to-list 'traverse-ignore-dirs "emacs_backup")
 ;; (global-set-key (kbd "C-c C-f") 'anything-traverse)
 ;; (global-set-key (kbd "C-M-|") 'traverse-toggle-split-window-h-v)
-;;
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  Traverse auto documentation
@@ -149,8 +155,8 @@
 ;; `traverse-incremental-quit-flag'
 ;; `traverse-incremental-current-buffer'
 ;; `traverse-incremental-occur-overlay'
-;; `traverse-incremental-read-fn'
 ;; `traverse-incremental-exit-and-quit-p'
+;; `traverse-incremental-history'
 ;; `traverse-incremental-face'
 
 ;;  * Faces defined here:
@@ -244,7 +250,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.60")
+(defconst traverse-version "1.1.61")
 
 ;;; Code:
 
@@ -1121,6 +1127,13 @@ Special commands:
   :group 'traverse
   :type  'string)
 
+(defcustom traverse-incremental-docstring
+  "     [RET:exit, C-g:quit, C-k:kill, C-z:Jump, C-j:Jump&quit, C-n/p:next/prec-line, M-p/n:hist]"
+  "*Documentation of `traverse-incremental-occur' prompt.
+Set it to nil to remove doc in prompt."
+  :group 'traverse
+  :type  'string)
+
 (defcustom traverse-incremental-length-line 80
   "*Length of the line dispalyed in traverse incremental buffer."
   :group 'traverse
@@ -1210,8 +1223,7 @@ Special commands:
 
 (defun traverse-incremental-read-search-input (initial-input)
   "Read each keyboard input and add it to `traverse-incremental-search-pattern'."
-  (let* ((prompt       (propertize traverse-incremental-search-prompt 'face '((:foreground "cyan"))))
-         (doc          "     [RET:exit, C-g:quit, C-k:kill, C-z:Jump, C-j:Jump&quit, C-n/p:next/prec-line, M-p/n:hist]")
+  (let* ((prompt       (propertize traverse-incremental-search-prompt 'face 'minibuffer-prompt))
          (inhibit-quit (not (fboundp 'read-key)))
          (tmp-list     ())
          (hist         (append "" traverse-incremental-history))
@@ -1247,7 +1259,8 @@ Special commands:
                    (setq start-hist t))
                  (message "No history available.") (sit-for 2) t)))
       (while (let ((char (traverse-read-char-or-event
-                          (concat prompt traverse-incremental-search-pattern doc))))
+                          (concat prompt traverse-incremental-search-pattern
+                                  traverse-incremental-docstring))))
                (case char
                  ((down ?\C-n)                 ; Next line
                   (when traverse-incremental-search-timer
