@@ -250,7 +250,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.62")
+(defconst traverse-version "1.1.63")
 
 ;;; Code:
 
@@ -1369,27 +1369,38 @@ for commands provided in the search buffer."
          (progn
            (traverse-incremental-start-timer)
            (traverse-incremental-read-search-input str-no-prop))
+      
       (progn
         (traverse-incremental-cancel-search)
         (when (equal (buffer-substring (point-at-bol) (point-at-eol)) "")
           (setq traverse-incremental-quit-flag t))
-        (if traverse-incremental-quit-flag
+        (if traverse-incremental-quit-flag ; C-g
             (progn
               (kill-buffer "*traverse search*")
               (switch-to-buffer traverse-incremental-current-buffer)
               (when traverse-occur-overlay
                 (delete-overlay traverse-occur-overlay))
               (delete-other-windows) (goto-char curpos) (message nil))
+            
             (if traverse-incremental-exit-and-quit-p
                 (progn (traverse-incremental-jump-and-quit)
                        (kill-buffer "*traverse search*") (message nil))
-                (traverse-incremental-jump) (other-window 1)))
+                (traverse-incremental-jump) (other-window 1))
+            ;; Push elm in history if not already there or empty.
+            (unless (or (member traverse-incremental-search-pattern traverse-incremental-history)
+                        (string= traverse-incremental-search-pattern ""))
+              (push traverse-incremental-search-pattern traverse-incremental-history))
+            ;; If elm already exists in history ring push it on top of stack.
+            (let ((pos-hist-elm (position traverse-incremental-search-pattern
+                                          traverse-incremental-history :test 'equal)))
+              (unless (string= (car traverse-incremental-history)
+                               traverse-incremental-search-pattern)
+                (push (pop (nthcdr pos-hist-elm traverse-incremental-history))
+                      traverse-incremental-history))))
         (setq traverse-count-occurences 0)
-        (unless (or (member traverse-incremental-search-pattern traverse-incremental-history)
-                    (string= traverse-incremental-search-pattern ""))
-          (push traverse-incremental-search-pattern traverse-incremental-history))
         (setq traverse-incremental-quit-flag nil)))))
 
+        
 (defun traverse-incremental-cancel-search ()
   "Cancel timer used for traverse incremental searching."
   (when traverse-incremental-search-timer
