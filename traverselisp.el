@@ -179,6 +179,7 @@
 ;; `traverse-avfs-default-directory'
 ;; `traverse-incremental-search-delay'
 ;; `traverse-incremental-search-prompt'
+;; `traverse-incremental-docstring'
 ;; `traverse-incremental-length-line'
 
 ;;  *** END auto-documentation
@@ -250,7 +251,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.65")
+(defconst traverse-version "1.1.66")
 
 ;;; Code:
 

@@ -1,19 +1,18 @@
 ;;; iterator.el --- A library to create and use elisp iterators objects.
- 
-;; Filename: iterator.el
+
+;; Copyright (C) 2008, 2009, 2010 Thierry Volpiatto, all rights reserved.
+;; Author:     Thierry Volpiatto - thierry dot volpiatto at gmail dot com 
+
 ;; Description: Create objects that iterate on themself. 
 ;; Author: Thierry Volpiatto
 ;; Maintainer: Thierry Volpiatto
 
 ;; Created: jeu fév  5 15:48:16 2009 (+0100)
 
-;; X-URL: 
+;; X-URL: http://mercurial.intuxication.org/hg/traverselisp 
 
-;; Keywords: 
+ ;; This file is not part of GNU Emacs.
 
-;; Compatibility: 
- 
- 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
 ;; published by the Free Software Foundation; either version 3, or
@@ -30,16 +29,33 @@
 ;; Floor, Boston, MA 02110-1301, USA.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
-;;; Commentary: 
-;; 
-;; 
-;; 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
-;;; Change log:
-;; 
-;; 
+;;
+;; Traverse auto documentation:
+;; ---------------------------
+
+;;  [UPDATE ALL EVAL] (traverse-auto-update-documentation)
+
+;;  * Macros defined here are:
+;; [EVAL] (traverse-auto-document-lisp-buffer :type 'macro :prefix "iter")
+;; `iter-list'
+;; `iter-apply-fun-on-list'
+;; `iter-scroll-list'
+;; `iter-scroll-up'
+;; `iter-scroll-down'
+;; `iter-mapc'
+;; `iter-mapcar'
+
+;; * functions defined here are:
+;; [EVAL] (traverse-auto-document-lisp-buffer :type 'function :prefix "iter")
+;; `iter-next'
+;; `iter-position'
+;; `iter-sub-next'
+;; `iter-sub-prec'
+;; `iter-map'
+;; `eshell-iterator'
+;; `flines-iterator'
+
+;;  *** END auto-documentation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; Code:
