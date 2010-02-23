@@ -250,7 +250,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.63")
+(defconst traverse-version "1.1.64")
 
 ;;; Code:
 
@@ -1339,17 +1339,32 @@ Set it to nil to remove doc in prompt."
 
 ;;;###autoload
 (defun traverse-incremental-occur (&optional initial-input)
-  "Incremental search of lines in current buffer matching `traverse-incremental-search-pattern'.
-With a prefix arg search symbol at point.
+  "Incremental search of lines in current buffer matching \
+`traverse-incremental-search-pattern' which is given by \
+`traverse-incremental-read-search-input'.
+
+With a prefix arg search symbol at point(INITIAL-INPUT).
+
 While you are incremental searching, commands provided are:
-C-n or <down>:  next line.
-C-p or <up>:    precedent line.
-C-v and M-v:    scroll up and down.
-C-z or <right>: jump without quitting loop.
-C-j or <left>:  jump and exit search buffer.
-RET or ESC:     exit but don't quit search buffer.
-DEL:            remove last character entered.
-C-g:            quit and restore buffer.
+
+C-n or <down>  next line.
+C-p or <up>    precedent line.
+C-v and M-v    scroll up and down.
+C-z or <right> jump without quitting loop.
+C-j or <left>  jump and exit search buffer.
+RET or ESC     exit but don't quit search buffer.
+DEL            remove last character entered.
+C-g            quit and restore buffer.
+M-p/n          Precedent and next `traverse-incremental-history' element:
+
+M-p ,-->A B C D E F G H I---,
+    |                       |
+    `---I H G F E D C B A<--'
+
+M-n ,-->I H G F E D C B A---,
+    |                       |
+    `---A B C D E F G H I<--'
+
 When you quit incremental search with RET or ESC, see `traverse-incremental-mode'
 for commands provided in the search buffer."
   (interactive "P")
