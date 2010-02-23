@@ -69,17 +69,22 @@
 create ITERATOR with `iter-list'."
   (funcall iterator))
 
-(defun* sub-iter-next (seq elm &key (test 'eq))
+(defsubst* iter-position (item seq &key (test 'eq))
+  "A simple replacement of CL `position'."
+  (loop for i in seq for index from 0
+     when (funcall test i item) return index))
+
+(defun* iter-sub-next (seq elm &key (test 'eq))
   "Create iterator from position of ELM to end of SEQ."
-  (lexical-let* ((pos      (position elm seq :test test))
+  (lexical-let* ((pos      (iter-position elm seq :test test))
                  (sub      (subseq seq (1+ pos)))
                  (iterator (iter-list sub)))
      (lambda ()
        (iter-next iterator))))
 
-(defun* sub-iter-prec (seq elm &key (test 'eq))
+(defun* iter-sub-prec (seq elm &key (test 'eq))
   "Create iterator from position of ELM to beginning of SEQ."
-  (lexical-let* ((pos      (position elm seq :test test))
+  (lexical-let* ((pos      (iter-position elm seq :test test))
                  (sub      (reverse (subseq seq 0 pos)))
                  (iterator (iter-list sub)))
      (lambda ()
@@ -98,14 +103,14 @@ create ITERATOR with `iter-list'."
          (remove nil sub)))))
 
 (defmacro iter-scroll-up (seq elm size)
-  `(lexical-let* ((pos (position (car (last ,elm)) ,seq))
+  `(lexical-let* ((pos (iter-position (car (last ,elm)) ,seq))
                   (sub (reverse (subseq ,seq 0 pos)))
                   (iterator (iter-scroll-list sub ,size)))
      (lambda ()
        (reverse (iter-next iterator)))))
 
 (defmacro iter-scroll-down (seq elm size)
-  `(lexical-let* ((pos (position (car (last ,elm)) ,seq))
+  `(lexical-let* ((pos (iter-position (car (last ,elm)) ,seq))
                   (sub (subseq ,seq pos))
                   (iterator (iter-scroll-list sub ,size)))
      (lambda ()

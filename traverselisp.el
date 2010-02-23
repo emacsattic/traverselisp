@@ -250,7 +250,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.64")
+(defconst traverse-version "1.1.65")
 
 ;;; Code:
 
@@ -1240,9 +1240,9 @@ Set it to nil to remove doc in prompt."
                    ;; starting at the current element of history.
                    (when start-hist
                      (if (< arg 0) ; M-p (move from left to right in ring).
-                         (setq it (sub-iter-next traverse-incremental-history
+                         (setq it (iter-sub-next traverse-incremental-history
                                                  cur-hist-elm :test 'equal))
-                         (setq it (sub-iter-prec traverse-incremental-history
+                         (setq it (iter-sub-prec traverse-incremental-history
                                                  cur-hist-elm :test 'equal))))
                    (setq tmp-list nil)
                    (let ((next (iter-next it)))
@@ -1406,8 +1406,8 @@ for commands provided in the search buffer."
                         (string= traverse-incremental-search-pattern ""))
               (push traverse-incremental-search-pattern traverse-incremental-history))
             ;; If elm already exists in history ring push it on top of stack.
-            (let ((pos-hist-elm (position traverse-incremental-search-pattern
-                                          traverse-incremental-history :test 'equal)))
+            (let ((pos-hist-elm (iter-position traverse-incremental-search-pattern
+                                               traverse-incremental-history :test 'equal)))
               (unless (string= (car traverse-incremental-history)
                                traverse-incremental-search-pattern)
                 (push (pop (nthcdr pos-hist-elm traverse-incremental-history))
