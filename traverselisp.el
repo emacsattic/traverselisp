@@ -253,7 +253,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.67")
+(defconst traverse-version "1.1.68")
 
 ;;; Code:
 
@@ -1330,8 +1330,12 @@ Set it to nil to remove doc in prompt."
                  (?\M-v                        ; Scroll up
                   (scroll-other-window -1) t)
                  (?\M-p                        ; Precedent history elm.
+                  (unless traverse-incremental-search-timer
+                    (traverse-incremental-start-timer))
                   (cycle-hist -1))
                  (?\M-n                        ; Next history elm.
+                  (unless traverse-incremental-search-timer
+                    (traverse-incremental-start-timer))
                   (cycle-hist 1))
                  (t                            ; Store character
                   (unless traverse-incremental-search-timer
