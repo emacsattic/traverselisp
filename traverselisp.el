@@ -253,7 +253,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.68")
+(defconst traverse-version "1.1.69")
 
 ;;; Code:
 
@@ -1094,22 +1094,19 @@ See headers of traverselisp.el for example."
 
 
 (defun traverse-auto-document-default-prefix ()
-  "Return file name without extension as default prefix"
+  "Return file name without extension as default prefix."
   (file-name-sans-extension (buffer-name (current-buffer))))
 
-(defun traverse-macro-p (sym)
-  "Predicate that return symbol SYM if SYM is a macro."
-  (condition-case nil
-      (unless (functionp sym)
-        (when (eq 'macro (car (symbol-function sym)))
-          sym))
-    (error nil)))
 
 (defun traverse-get-first-line-documentation (sym)
   "Return first line documentation of symbol SYM."
-  (let ((doc (if (or (functionp sym) (traverse-macro-p sym))
-                 (documentation sym t)
-                 (documentation-property sym 'variable-documentation t))))
+  (let ((doc (cond ((fboundp sym)
+                    (documentation sym t))
+                   ((boundp sym)
+                    (documentation-property sym 'variable-documentation t))
+                   ((facep sym)
+                    (face-documentation sym))
+                   (t nil))))
     (when doc
       (car (split-string doc "\n")))))
 
