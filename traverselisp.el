@@ -253,7 +253,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.69")
+(defconst traverse-version "1.1.70")
 
 ;;; Code:
 
@@ -1111,19 +1111,23 @@ See headers of traverselisp.el for example."
       (car (split-string doc "\n")))))
 
 ;;;###autoload
-(defun traverse-auto-documentation-insert-header (title &optional nstar)
+(defun traverse-auto-documentation-insert-header (title &optional docstring)
   "Insert an auto documentation line of commented code to eval.
+With prefix arg insert also the docstring argument.
 See headers of `traverselisp.el' for example."
-  (interactive "sTitle: \np")
-  (let ((ttype (completing-read "Type: " '("command " "nested-command "
-                                           "function " "nested-function "
-                                           "macro " "internal-variable "
-                                           "nested-variable " "faces "
-                                           "anything-source ") nil t)))
-    (insert (concat ";;  " (make-string nstar ?*) " " title "\n"
+  (interactive "sTitle: \nP")
+  (let* ((ttype      (completing-read "Type: " '("command" "nested-command"
+                                                 "function" "nested-function"
+                                                 "macro" "internal-variable"
+                                                 "nested-variable" "faces"
+                                                 "anything-source") nil t))
+         (prefix     (read-string "Prefix: " (traverse-auto-document-default-prefix)))
+         (prefix-arg (concat " :prefix " "\"" prefix "\"")))
+    (insert (concat ";;  * " title "\n"
                     ";; [EVAL] (traverse-auto-document-lisp-buffer :type \'"
                     ttype
-                    ":prefix " "\"" (traverse-auto-document-default-prefix) "\")")
+                    (unless (string= prefix "") prefix-arg)
+                    (when docstring " :docstring t") ")")
             (if (save-excursion (re-search-forward "^;; +\\*+ .*" nil t))
                 "" "\n\n\n;;  *** END auto-documentation"))))
 
@@ -1151,7 +1155,7 @@ Special commands:
 
 
 (defcustom traverse-incremental-search-delay 0.2
-  "*During incremental searching display is updated all `traverse-incremental-search-delay' seconds."
+  "*During incremental searching, display is updated all these seconds."
   :group 'traverse
   :type  'integer)
 
@@ -1168,7 +1172,7 @@ Set it to nil to remove doc in prompt."
   :type  'string)
 
 (defcustom traverse-incremental-length-line 80
-  "*Length of the line dispalyed in traverse incremental buffer."
+  "*Length of the line displayed in traverse incremental buffer."
   :group 'traverse
   :type 'integer)
 
