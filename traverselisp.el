@@ -253,7 +253,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.71")
+(defconst traverse-version "1.1.72")
 
 ;;; Code:
 
@@ -1302,21 +1302,21 @@ Set it to nil to remove doc in prompt."
                           (concat prompt traverse-incremental-search-pattern
                                   traverse-incremental-docstring))))
                (case char
-                 ((down ?\C-n)                 ; Next line
+                 ((down ?\C-n)                 ; Next line.
                   (when traverse-incremental-search-timer
                     (traverse-incremental-cancel-search))
                   (traverse-incremental-next-line)
                   (traverse-incremental-occur-color-current-line) t)
-                 ((up ?\C-p)                   ; Precedent line
+                 ((up ?\C-p)                   ; Precedent line.
                   (when traverse-incremental-search-timer
                     (traverse-incremental-cancel-search))
                   (traverse-incremental-precedent-line)
                   (traverse-incremental-occur-color-current-line) t)
-                 (?\C-\;
+                 (?\C-\;                       ; Scroll both windows down.
                   (when traverse-incremental-search-timer
                     (traverse-incremental-cancel-search))
                   (traverse-incremental-scroll-down) t)
-                 (?\C-\,
+                 (?\C-\,                       ; Scroll both windows up.
                   (when traverse-incremental-search-timer
                     (traverse-incremental-cancel-search))
                   (traverse-incremental-scroll-up) t)
@@ -1327,16 +1327,16 @@ Set it to nil to remove doc in prompt."
                   (pop tmp-list) t)
                  (?\C-g                        ; Quit and restore buffers.
                   (setq traverse-incremental-quit-flag t) nil)
-                 ((or right ?\C-z)             ; persistent action
+                 ((or right ?\C-z)             ; persistent action.
                   (traverse-incremental-jump) (other-window 1) t)
                  ((left ?\C-j)                 ; Jump to candidate and kill search buffer.
                   (setq traverse-incremental-exit-and-quit-p t) nil)
-                 (?\C-v                        ; Scroll down
+                 (?\C-v                        ; Scroll down.
                   (scroll-other-window 1) t)
-                 (?\C-k                        ; Kill input
+                 (?\C-k                        ; Kill input.
                   (kill-new traverse-incremental-search-pattern)
                   (setq tmp-list ()) t)
-                 (?\M-v                        ; Scroll up
+                 (?\M-v                        ; Scroll up.
                   (scroll-other-window -1) t)
                  (?\M-p                        ; Precedent history elm.
                   (unless traverse-incremental-search-timer
@@ -1346,7 +1346,7 @@ Set it to nil to remove doc in prompt."
                   (unless traverse-incremental-search-timer
                     (traverse-incremental-start-timer))
                   (cycle-hist 1))
-                 (t                            ; Store character
+                 (t                            ; Store character.
                   (unless traverse-incremental-search-timer
                     (traverse-incremental-start-timer))
                   (if (characterp char)
