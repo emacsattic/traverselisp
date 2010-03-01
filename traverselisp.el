@@ -253,7 +253,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.70")
+(defconst traverse-version "1.1.71")
 
 ;;; Code:
 
@@ -1165,7 +1165,7 @@ Special commands:
   :type  'string)
 
 (defcustom traverse-incremental-docstring
-  "     [RET:exit, C-g:quit, C-k:kill, C-z:Jump, C-j:Jump&quit, C-n/p:next/prec-line, M-p/n:hist]"
+  "     [RET:exit, C-g:quit, C-k:kill, C-z:Jump, C-j:Jump&quit, C-n/p:next/prec-line, M-p/n:hist, C/M-v/C-,/;:Scroll]"
   "*Documentation of `traverse-incremental-occur' prompt.
 Set it to nil to remove doc in prompt."
   :group 'traverse
@@ -1312,11 +1312,19 @@ Set it to nil to remove doc in prompt."
                     (traverse-incremental-cancel-search))
                   (traverse-incremental-precedent-line)
                   (traverse-incremental-occur-color-current-line) t)
+                 (?\C-\;
+                  (when traverse-incremental-search-timer
+                    (traverse-incremental-cancel-search))
+                  (traverse-incremental-scroll-down) t)
+                 (?\C-\,
+                  (when traverse-incremental-search-timer
+                    (traverse-incremental-cancel-search))
+                  (traverse-incremental-scroll-up) t)
                  ((?\e ?\r) (message nil) nil) ; RET or ESC break and exit code.
                  (?\d                          ; Delete backward with DEL.
                   (unless traverse-incremental-search-timer
                     (traverse-incremental-start-timer))
-                  (pop tmp-list))
+                  (pop tmp-list) t)
                  (?\C-g                        ; Quit and restore buffers.
                   (setq traverse-incremental-quit-flag t) nil)
                  ((or right ?\C-z)             ; persistent action
