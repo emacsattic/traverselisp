@@ -253,7 +253,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.73")
+(defconst traverse-version "1.1.74")
 
 ;;; Code:
 
@@ -1023,65 +1023,65 @@ Example: (traverse-auto-document-lisp-buffer :type 'function :prefix \"^traverse
 
 See headers of traverselisp.el for example."
   `(let* ((boundary-regexp "^;; +\\*+ .*")
-         (regexp          (case ,type
-                            ('command           "^\(def\\(un\\|subst\\)")
-                            ('nested-command    "^ +\(def\\(un\\|subst\\)")
-                            ('function          "^\(def\\(un\\|subst\\|advice\\)")
-                            ('nested-function   "^ +\(def\\(un\\|subst\\|advice\\)")
-                            ('macro             "^\(defmacro")
-                            ('internal-variable "^\(defvar")
-                            ('nested-variable   "^ +\(defvar")
-                            ('user-variable     "\(defcustom")
-                            ('faces             "\(defface")
-                            ('anything-source   "^\(defvar anything-c-source")
-                            (t (error           "Unknow type"))))
-         (fn-list         (traverse-find-readlines
-                           (current-buffer)
-                           regexp
-                           :insert-fn 'buffer))
-         beg end)
+          (regexp          (case ,type
+                             ('command           "^\(def\\(un\\|subst\\)")
+                             ('nested-command    "^ +\(def\\(un\\|subst\\)")
+                             ('function          "^\(def\\(un\\|subst\\|advice\\)")
+                             ('nested-function   "^ +\(def\\(un\\|subst\\|advice\\)")
+                             ('macro             "^\(defmacro")
+                             ('internal-variable "^\(defvar")
+                             ('nested-variable   "^ +\(defvar")
+                             ('user-variable     "\(defcustom")
+                             ('faces             "\(defface")
+                             ('anything-source   "^\(defvar anything-c-source")
+                             (t (error           "Unknow type"))))
+          (fn-list         (traverse-find-readlines
+                            (current-buffer)
+                            regexp
+                            :insert-fn 'buffer))
+          beg end)
      
-    (flet ((maybe-insert-with-prefix (name)
-             (let ((doc (or (traverse-get-first-line-documentation (intern name))
-                            "Not documented.")))
-               (if ,docstring
-                   (if ,prefix
-                       (when (string-match ,prefix name)
-                         (insert (concat ";; \`" name "\'\n;; " doc "\n")))
-                       (insert (concat ";; \`" name "\'\n;; " doc "\n")))
-                   (if ,prefix
-                       (when (string-match ,prefix name)
-                         (insert (concat ";; \`" name "\'\n")))
-                       (insert (concat ";; \`" name "\'\n")))))))
-                   
-      (insert "\n") (setq beg (point))
-      (save-excursion (when (re-search-forward boundary-regexp)
-                        (forward-line -1) (setq end (point))))
-      (delete-region beg end)
-      (when (eq ,type 'anything-source) (setq regexp "\(defvar"))
-      (dolist (i fn-list)
-        (let* ((elm     (cadr i))
-               (elm1    (replace-regexp-in-string "\*" "" elm))
-               (elm-mod (replace-regexp-in-string regexp "" elm1))
-               (elm-fin (replace-regexp-in-string "\(\\|\)" ""(car (split-string elm-mod)))))
-          (case ,type
-            ('command
-             (when (commandp (intern elm-fin))
-               (maybe-insert-with-prefix elm-fin)))
-            ('nested-command
-             (when (commandp (intern elm-fin))
-               (maybe-insert-with-prefix elm-fin)))
-            ('function
-             (when (not (commandp (intern elm-fin)))
-               (maybe-insert-with-prefix elm-fin)))
-            ('nested-function
-             (when (not (commandp (intern elm-fin)))
-               (maybe-insert-with-prefix elm-fin)))
-            ('internal-variable
-             (unless (string-match "anything-c-source" elm-fin)
-               (maybe-insert-with-prefix elm-fin)))
-            (t
-             (maybe-insert-with-prefix elm-fin))))))))
+     (flet ((maybe-insert-with-prefix (name)
+              (let ((doc (or (traverse-get-first-line-documentation (intern name))
+                             "Not documented.")))
+                (if ,docstring
+                    (if ,prefix
+                        (when (string-match ,prefix name)
+                          (insert (concat ";; \`" name "\'\n;; " doc "\n")))
+                        (insert (concat ";; \`" name "\'\n;; " doc "\n")))
+                    (if ,prefix
+                        (when (string-match ,prefix name)
+                          (insert (concat ";; \`" name "\'\n")))
+                        (insert (concat ";; \`" name "\'\n")))))))
+       
+       (insert "\n") (setq beg (point))
+       (save-excursion (when (re-search-forward boundary-regexp)
+                         (forward-line -1) (setq end (point))))
+       (delete-region beg end)
+       (when (eq ,type 'anything-source) (setq regexp "\(defvar"))
+       (dolist (i fn-list)
+         (let* ((elm     (cadr i))
+                (elm1    (replace-regexp-in-string "\*" "" elm))
+                (elm-mod (replace-regexp-in-string regexp "" elm1))
+                (elm-fin (replace-regexp-in-string "\(\\|\)" ""(car (split-string elm-mod)))))
+           (case ,type
+             ('command
+              (when (commandp (intern elm-fin))
+                (maybe-insert-with-prefix elm-fin)))
+             ('nested-command
+              (when (commandp (intern elm-fin))
+                (maybe-insert-with-prefix elm-fin)))
+             ('function
+              (when (not (commandp (intern elm-fin)))
+                (maybe-insert-with-prefix elm-fin)))
+             ('nested-function
+              (when (not (commandp (intern elm-fin)))
+                (maybe-insert-with-prefix elm-fin)))
+             ('internal-variable
+              (unless (string-match "anything-c-source" elm-fin)
+                (maybe-insert-with-prefix elm-fin)))
+             (t
+              (maybe-insert-with-prefix elm-fin))))))))
 
 ;;;###autoload
 (defun traverse-auto-update-documentation ()
@@ -1119,8 +1119,8 @@ See headers of `traverselisp.el' for example."
   (let* ((ttype      (completing-read "Type: " '("command" "nested-command"
                                                  "function" "nested-function"
                                                  "macro" "internal-variable"
-                                                 "nested-variable" "faces"
-                                                 "anything-source") nil t))
+                                                 "user-variable" "nested-variable"
+                                                 "faces" "anything-source") nil t))
          (prefix     (read-string "Prefix: " (traverse-auto-document-default-prefix)))
          (prefix-arg (concat " :prefix " "\"" prefix "\"")))
     (insert (concat ";;  * " title "\n"
