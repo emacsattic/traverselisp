@@ -253,7 +253,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Version:
-(defconst traverse-version "1.1.72")
+(defconst traverse-version "1.1.73")
 
 ;;; Code:
 
@@ -1334,6 +1334,8 @@ Set it to nil to remove doc in prompt."
                  (?\C-v                        ; Scroll down.
                   (scroll-other-window 1) t)
                  (?\C-k                        ; Kill input.
+                  (unless traverse-incremental-search-timer
+                    (traverse-incremental-start-timer))
                   (kill-new traverse-incremental-search-pattern)
                   (setq tmp-list ()) t)
                  (?\M-v                        ; Scroll up.
